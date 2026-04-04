@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 300px;
+    background: #080606;
+    color: #F0EDE8;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+  }
+  .header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid #1a1010;
+  }
+  .title {
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    color: #F0EDE8;
+    margin-bottom: 2px;
+  }
+  .sub {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: #4e3e3e;
+    text-transform: uppercase;
+  }
+  .section {
+    padding: 14px 16px;
+    border-bottom: 1px solid #1a1010;
+  }
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #4e3e3e;
+    margin-bottom: 8px;
+  }
+  input, select {
+    width: 100%;
+    padding: 7px 10px;
+    background: #0f0d0d;
+    border: 1px solid #251818;
+    border-radius: 4px;
+    color: #C4B8B0;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    outline: none;
+    margin-bottom: 6px;
+  }
+  input:focus { border-color: #C0211C; }
+  input::placeholder { color: #3a2a2a; }
+  .btn {
+    width: 100%;
+    padding: 9px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #C0211C; color: #fff; }
+  .btn-ghost { background: none; border: 1px solid #251818; color: #8a7272; }
+  .status {
+    padding: 10px 16px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #4e3e3e;
+    min-height: 32px;
+  }
+  .status.ok    { color: #5aab6e; }
+  .status.error { color: #C0211C; }
+  #groups-list { display: none; }
+  .group-item {
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #8a7272;
+    margin-bottom: 2px;
+  }
+  .group-item:hover { background: #1a1010; color: #C4B8B0; }
+  .group-item.selected { background: rgba(192,33,28,0.1); color: #C0211C; border: 1px solid #3a1f1f; }
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid #1a1010;
+  }
+  .tab {
+    flex: 1; padding: 8px;
+    text-align: center;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #4e3e3e; cursor: pointer; border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: #C0211C; border-bottom-color: #C0211C; }
+  #tab-review { display: block; }
+  #tab-config { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">ATELIER.SH</div>
+  <div class="sub">// review editor · extensão</div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" data-tab="review">revisar</div>
+  <div class="tab" data-tab="config">configurar</div>
+</div>
+
+<!-- Tab: Revisar -->
+<div id="tab-review">
+  <div class="section">
+    <div class="section-label">grupo (opcional)</div>
+    <input type="text" id="group-search" placeholder="buscar grupo..." autocomplete="off">
+    <div id="groups-list"></div>
+    <div id="selected-group" style="font-size:10px;color:#5aab6e;margin-top:2px;min-height:14px"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">url para revisar</div>
+    <input type="text" id="url-input" placeholder="https://..." autocomplete="off">
+    <div style="display:flex;gap:6px;margin-top:2px">
+      <button class="btn btn-ghost" id="btn-use-current" style="font-size:9px;padding:5px">usar aba atual</button>
+    </div>
+  </div>
+
+  <div class="section" style="display:flex;gap:8px">
+    <button class="btn btn-primary" id="btn-activate">ativar overlay</button>
+    <button class="btn btn-ghost"   id="btn-deactivate" style="flex:0.5">sair</button>
+  </div>
+</div>
+
+<!-- Tab: Configurar -->
+<div id="tab-config">
+  <div class="section">
+    <div class="section-label">supabase</div>
+    <input type="password" id="cfg-token" placeholder="token de autenticação" autocomplete="off">
+    <button class="btn btn-ghost" id="btn-save-config" style="margin-top:4px">salvar</button>
+  </div>
+  <div class="section" style="font-size:10px;color:#4e3e3e;line-height:1.8">
+    <div style="margin-bottom:6px;color:#8a7272">como obter o token:</div>
+    <div>1. Abra o Atelier.sh</div>
+    <div>2. Faça login</div>
+    <div>3. Abra o DevTools (F12)</div>
+    <div>4. Console: <code style="color:#C4B8B0">localStorage.getItem('sb-siat-auth-token')</code></div>
+    <div>5. Cole aqui o access_token</div>
+  </div>
+</div>
+
+<div class="status" id="status">pronto — ative o overlay para anotar</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
