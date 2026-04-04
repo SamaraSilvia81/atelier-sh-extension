@@ -597,3 +597,31 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   return true
 })
+
+
+// ── Auto-ativação via hash do Atelier.sh ────────────────────────────────
+// Quando o Atelier.sh abre o site com #atelier_group=xxx&atelier_name=yyy,
+// a extensão detecta e ativa o overlay automaticamente.
+
+;(function autoActivateFromHash() {
+  const hash = window.location.hash.replace('#', '')
+  if (!hash.includes('atelier_group')) return
+
+  const params = new URLSearchParams(hash)
+  const groupId   = params.get('atelier_group')
+  const groupName = params.get('atelier_name')
+
+  if (!groupId) return
+
+  // Limpa o hash da URL (não fica visível pra ninguém)
+  history.replaceState(null, '', window.location.pathname + window.location.search)
+
+  // Aguarda o DOM estar pronto antes de ativar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      activate(groupId, decodeURIComponent(groupName || ''))
+    })
+  } else {
+    activate(groupId, decodeURIComponent(groupName || ''))
+  }
+})()
