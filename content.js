@@ -159,7 +159,11 @@ function bindEvents() {
     deactivate()
   })
 
-  // SVG — desenho
+  // Overlay — cliques para comment, check, cross
+  const overlay = document.getElementById('atelier-overlay')
+  overlay.addEventListener('click', onOverlayClick)
+
+  // SVG — desenho livre (draw, highlight) e eraser de traços
   const svg = document.getElementById('atelier-svg')
   svg.addEventListener('mousedown', onMouseDown)
   svg.addEventListener('mousemove', onMouseMove)
@@ -181,6 +185,24 @@ function getPos(e) {
   return { x: e.clientX, y: e.clientY }
 }
 
+function onOverlayClick(e) {
+  if (!state.active) return
+  // Ignora se o clique veio de dentro da toolbar, colorpicker ou comentário
+  if (e.target.closest('#atelier-toolbar, #atelier-colorpicker, .atelier-comment')) return
+  if (state.tool === 'draw' || state.tool === 'highlight' || state.tool === 'select' || state.tool === 'eraser') return
+
+  const pos = { x: e.clientX, y: e.clientY }
+
+  if (state.tool === 'comment') {
+    addComment(pos)
+    setTool('select') // volta pro select depois de soltar o comentário
+  } else if (state.tool === 'check') {
+    addAnnotation('check', pos)
+  } else if (state.tool === 'cross') {
+    addAnnotation('cross', pos)
+  }
+}
+
 function onMouseDown(e) {
   if (!state.active) return
   if (e.button !== 0) return
@@ -192,13 +214,6 @@ function onMouseDown(e) {
     state.currentPath = [pos]
   } else if (state.tool === 'eraser') {
     eraseAt(pos)
-  } else if (state.tool === 'comment') {
-    addComment(pos)
-    setTool('select')
-  } else if (state.tool === 'check') {
-    addAnnotation('check', pos)
-  } else if (state.tool === 'cross') {
-    addAnnotation('cross', pos)
   }
 }
 
@@ -236,7 +251,10 @@ function setTool(tool) {
   state.tool = tool
   updateToolbar()
   const overlay = document.getElementById('atelier-overlay')
+  // select = site fica interativo (overlay some dos eventos)
+  // qualquer outro = overlay captura eventos
   overlay.className = 'active ' + tool
+  overlay.style.pointerEvents = tool === 'select' ? 'none' : 'all'
   updateStatus('ferramenta: ' + tool)
 }
 

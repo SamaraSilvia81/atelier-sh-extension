@@ -15,18 +15,22 @@
   height: 100%;
   pointer-events: none;
 }
-#atelier-overlay.drawing svg,
+#atelier-overlay.draw svg,
 #atelier-overlay.highlight svg,
-#atelier-overlay.eraser svg {
+#atelier-overlay.eraser svg,
+#atelier-overlay.comment svg,
+#atelier-overlay.check svg,
+#atelier-overlay.cross svg {
   pointer-events: all;
-  cursor: crosshair;
 }
-#atelier-overlay.eraser svg {
-  cursor: cell;
-}
-#atelier-overlay.pan {
-  cursor: grab;
-}
+#atelier-overlay.draw svg     { cursor: crosshair; }
+#atelier-overlay.highlight svg { cursor: crosshair; }
+#atelier-overlay.comment svg  { cursor: cell; }
+#atelier-overlay.check svg    { cursor: crosshair; }
+#atelier-overlay.cross svg    { cursor: crosshair; }
+#atelier-overlay.eraser svg   { cursor: cell; }
+#atelier-overlay.select svg   { pointer-events: none; }
+#atelier-overlay.pan          { cursor: grab; }
 
 /* Toolbar */
 #atelier-toolbar {
