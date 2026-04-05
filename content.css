@@ -1,6 +1,8 @@
 #atelier-overlay {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* width/height definidos dinamicamente via JS pra cobrir a página inteira */
   z-index: 2147483647;
   pointer-events: none;
   font-family: 'Courier New', monospace;
@@ -120,7 +122,7 @@
 
 /* Comentário balloon */
 .atelier-comment {
-  position: fixed;
+  position: absolute;
   background: #0f0d0d;
   border: 1px solid #3a1f1f;
   border-radius: 6px;

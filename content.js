@@ -182,7 +182,7 @@ function onKey(e) {
 }
 
 function getPos(e) {
-  return { x: e.clientX, y: e.clientY }
+  return { x: e.clientX + window.scrollX, y: e.clientY + window.scrollY }
 }
 
 function onOverlayClick(e) {
@@ -191,7 +191,7 @@ function onOverlayClick(e) {
   if (e.target.closest('#atelier-toolbar, #atelier-colorpicker, .atelier-comment')) return
   if (state.tool === 'draw' || state.tool === 'highlight' || state.tool === 'select' || state.tool === 'eraser') return
 
-  const pos = { x: e.clientX, y: e.clientY }
+  const pos = { x: e.clientX + window.scrollX, y: e.clientY + window.scrollY }
 
   if (state.tool === 'comment') {
     addComment(pos)
@@ -325,14 +325,14 @@ function renderComment(ann) {
   el.addEventListener('mousedown', e => {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') return
     dragging = true
-    dx = e.clientX - parseInt(el.style.left)
-    dy = e.clientY - parseInt(el.style.top)
+    dx = e.clientX + window.scrollX - parseInt(el.style.left)
+    dy = e.clientY + window.scrollY - parseInt(el.style.top)
     e.stopPropagation()
   })
   document.addEventListener('mousemove', e => {
     if (!dragging) return
-    el.style.left = (e.clientX - dx) + 'px'
-    el.style.top  = (e.clientY - dy) + 'px'
+    el.style.left = (e.clientX + window.scrollX - dx) + 'px'
+    el.style.top  = (e.clientY + window.scrollY - dy) + 'px'
     ann.x = parseInt(el.style.left)
     ann.y = parseInt(el.style.top)
   })
@@ -576,6 +576,21 @@ async function getSupabaseToken() {
   })
 }
 
+// ── Tamanho do overlay — cobre a página inteira ──────────────────────────
+// Chamado no activate e sempre que a página muda de tamanho/scroll
+
+function updateOverlaySize() {
+  const overlay = document.getElementById('atelier-overlay')
+  const svg     = document.getElementById('atelier-svg')
+  if (!overlay || !svg) return
+  const w = Math.max(document.documentElement.scrollWidth,  document.body.scrollWidth,  window.innerWidth)
+  const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight)
+  overlay.style.width  = w + 'px'
+  overlay.style.height = h + 'px'
+  svg.setAttribute('width',  w)
+  svg.setAttribute('height', h)
+}
+
 // ── Ativar / Desativar ───────────────────────────────────────────────────
 
 function activate(groupId, groupName) {
@@ -583,6 +598,9 @@ function activate(groupId, groupName) {
   state.groupId   = groupId   || null
   state.groupName = groupName || ''
   buildUI()
+  updateOverlaySize()
+  window.addEventListener('scroll', updateOverlaySize, { passive: true })
+  window.addEventListener('resize', updateOverlaySize, { passive: true })
   document.getElementById('atelier-overlay').classList.add('active')
   setTool('draw')
   updateStatus('atelier.sh · ' + (groupName || window.location.hostname) + ' · desenhando')
@@ -591,6 +609,8 @@ function activate(groupId, groupName) {
 
 function deactivate() {
   state.active = false
+  window.removeEventListener('scroll', updateOverlaySize)
+  window.removeEventListener('resize', updateOverlaySize)
   document.getElementById('atelier-overlay')?.classList.remove('active')
   document.getElementById('atelier-toolbar')?.remove()
   document.getElementById('atelier-colorpicker')?.remove()
